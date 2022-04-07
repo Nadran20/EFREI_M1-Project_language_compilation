@@ -1,39 +1,52 @@
 class Grammar:
-
     def __init__(self, path):
-        # Read only
         with open(path, 'r') as file:
-            # Tableau qui stock grammaire
-            self.regle = []
-            lines = file.read().splitlines()
+            self.regle = {}
+            lines=file.read().splitlines()
             for line in lines:
-                temp = line.split('->')
-                self.regle.append([temp[0]])
-                temp = temp[1].split('|')
-                self.regle[len(self.regle) - 1].extend(temp)
+                line = line.split("->")
+                line[0] = line[0].strip()
+                line[1] = line[1].strip()
+                line[1] = line[1].split("|")
+                for index, item in enumerate(line[1]):
+                    line[1][index] = item.strip()
+                self.regle[line[0]] = line[1]
+
 
     def __str__(self):
         result = ""
-        for line in self.regle:
-            for index, item in enumerate(line):
-                if index == 0 and len(line) > 1:
-                    result += f"{item} -> "
-                elif index == len(line) - 1 or index == 0:
-                    result += f"{item}"
+        for key, values in self.regle.items():
+            result += f"{key} ->"
+            for index, item in enumerate(values):
+                if (index == len(values)-1):
+                    result += f" {item}\n"
                 else:
-                    result += f"{item} | "
-            result += "\n"
+                    result += f" {item} |"
         return result
 
-    def remove_recursive(self):
-        for indexLine, line in enumerate(self.regle):
-            for indexItem, item in enumerate(line[1:]):
-                if (item[0] == line[0]):
-                    self.regle.append([f"{line[0]}'"])
-                    self.regle[len(self.regle)-1].extend([f"{item[1:]}{line[0]}'"])
-                    self.regle[len(self.regle)-1].extend(['eps'])
-                    del self.regle[indexLine][indexItem+1]
-                    self.regle[indexLine][1] += f"{line[0]}'"
-        print(self.regle)
 
-    # def read_setence(self, setence):
+    def remove_left_recursive(self):
+        recursive = False
+        temp = {}
+        for key, values in self.regle.items():
+            sup=[]
+            for index, item in enumerate(values):
+                if item.startswith(key):
+                    recursive = True
+                    sup.append(item)
+                    ###################################
+                    if len(values) == 0:
+                        values = [f"{key}\'"] # PAS SUR DE MOI
+                    ###################################
+                    try:
+                        temp[f'{key}\''].append(f'{item[len(key):]}{key}\'')
+                    except KeyError:
+                        temp[f'{key}\''] = ([f'{item[len(key):]}{key}\''])
+                if recursive==True and not item.startswith(key):
+                    values[index]+=f'{key}\''
+            recursive=False
+            for item in sup:
+                values.remove(item)
+        for key, values in temp.items():
+            values.append("eps")
+        self.regle = dict (self.regle, **temp)
