@@ -1,14 +1,7 @@
-from grammar import *
-
-
-def print_hi(name):
-    print(f'Hi, {name}')
-
+from grammar import Grammar
 
 if __name__ == '__main__':
-    print_hi('PyCharm')
-    prout = Grammar("src/test.txt")
-    print(prout)
-    prout.remove_recursive()
-    print(prout)
-    print('Audrey pute')
+    test1 = Grammar("src/test.txt")
+    print(test1)
+    test1.remove_left_recursive()
+    print(test1)
