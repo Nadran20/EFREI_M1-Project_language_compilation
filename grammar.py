@@ -34,10 +34,6 @@ class Grammar:
                 if item.startswith(key):
                     recursive = True
                     sup.append(item)
-                    ###################################
-                    if len(values) == 0:
-                        values = [f"{key}\'"] # PAS SUR DE MOI
-                    ###################################
                     try:
                         temp[f'{key}\''].append(f'{item[len(key):]}{key}\'')
                     except KeyError:
@@ -47,6 +43,8 @@ class Grammar:
             recursive=False
             for item in sup:
                 values.remove(item)
+                if len(self.regle[key]) == 0:
+                    values.append(f"{key}\'") 
         for key, values in temp.items():
             values.append("eps")
         self.regle = dict (self.regle, **temp)
