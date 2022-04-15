@@ -10,7 +10,7 @@ class Grammar:
                 line[1] = line[1].split("|")
                 for index, item in enumerate(line[1]):
                     line[1][index] = item.strip()
-                self.regle[line[0]] = line[1]
+                self.regle[line[0]] = list(set(line[1]))
 
 
     def __str__(self):
@@ -30,14 +30,15 @@ class Grammar:
         temp = {}
         for key, values in self.regle.items():
             sup=[]
-            for index, item in enumerate(values):
-                if item.startswith(key):
-                    recursive = True
+            for item in values:
+                if item.startswith(key) : 
+                    recursive = True 
                     sup.append(item)
                     try:
                         temp[f'{key}\''].append(f'{item[len(key):]}{key}\'')
                     except KeyError:
                         temp[f'{key}\''] = ([f'{item[len(key):]}{key}\''])
+            for index, item in enumerate(values): 
                 if recursive==True and not item.startswith(key):
                     values[index]+=f'{key}\''
             recursive=False
@@ -45,6 +46,7 @@ class Grammar:
                 values.remove(item)
                 if len(self.regle[key]) == 0:
                     values.append(f"{key}\'") 
-        for key, values in temp.items():
+        for _, values in temp.items():
             values.append("eps")
-        self.regle = dict (self.regle, **temp)
+            values=list(set(values))
+        self.regle = dict(self.regle, **temp)
