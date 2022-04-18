@@ -10,7 +10,10 @@ class Grammar:
                 line[1] = line[1].split("|")
                 for index, item in enumerate(line[1]):
                     line[1][index] = item.strip()
-                self.regle[line[0]] = list(set(line[1]))
+                try :
+                    self.regle[line[0]] += list(set(line[1]))
+                except KeyError:
+                    self.regle[line[0]] = list(set(line[1]))
 
 
     def __str__(self):
