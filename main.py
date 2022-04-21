@@ -5,3 +5,5 @@ if __name__ == '__main__':
     print(test1)
     test1.remove_left_recursive()
     print(test1)
+    test1.get_first()
+   ## test1.get_first()
