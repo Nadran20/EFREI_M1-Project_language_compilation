@@ -20,7 +20,7 @@ class Grammar:
                                 self.terminaux.append(line[1][index][index2])
                     else:
                         line[1][index] = [['eps']]
-                        if ['esp'] not in self.terminaux:
+                        if ['eps'] not in self.terminaux:
                             self.terminaux.append(['eps'])
                 try :
                     self.regle[line[0]] += line[1]
@@ -31,9 +31,10 @@ class Grammar:
                 if item in self.terminaux:
                     self.terminaux.remove(item)
 
+
     def __str__(self):
-        print (f"Nous sommes les terminaux{self.terminaux}")
-        print (f"Nous sommes les non-terminaux{self.non_terminaux}")
+        print (f"Nous sommes les terminaux  {self.terminaux}")
+        print (f"Nous sommes les non-terminaux  {self.non_terminaux}")
         result = ""
         for key, values in self.regle.items():
             result += f"{key} -> "
@@ -45,6 +46,7 @@ class Grammar:
                 else:
                     result += f" | "
         return result
+
 
     def remove_left_recursive(self):
         recursive = False
@@ -74,30 +76,31 @@ class Grammar:
         self.regle = dict(self.regle, **temp)
         self.non_terminaux = [[key] for key, _ in self.regle.items()]
 
+
     def get_first(self):
-        first = {i: [] for i in self.regle.keys()}
-        for nT, r in self.regle.items():
-            for rules in r:
-                print(f"regles en cours {r}")
-                self.calcul_premier(first, nT, rules)
+        first = {key: [] for key in self.regle.keys()}
+        for key, values in self.regle.items():
+            for rule in values:
+                if rule[0] in self.terminaux:
+                    if rule[0] not in first[key]:
+                        first[key].append(rule[0])
+                elif rule[0] in self.non_terminaux:
+                    temp =[]
+                    self.calcul_premier_recursive(key, rule, temp)
+                    for value in temp:
+                        if value not in first[key]:
+                            first[key].append(value)
+        print(f"{first=}")
+    
+    #Fonction recursive qui retourne une liste comprenant tous les premiers terminaux d'un non-terminal
+    def calcul_premier_recursive(self, key, rule, temp):
+        if rule[0] in self.terminaux:
+            temp.append(rule[0])
+        elif rule[0] in self.non_terminaux:
+            for item in self.regle[rule[0][0]]:
+                if item[0] in self.terminaux:
+                    temp.append(item[0])
+                elif item[0] in self.non_terminaux:
+                    self.calcul_premier_recursive(key, item, temp)
+        return temp
 
-    def calcul_premier(self, first, nt, rules):
-        if rules[0] in self.terminaux:
-            first[nt] = [first[nt], rules[0]]
-            print(f"Ajouter terminal {rules[0]} dans {nt}")
-        elif rules[0] in self.non_terminaux:
-            print(f"Règle avec nT {nt} {rules[0]}")
-            first[nt] = [first[nt], self.calcul_nt_premier(first, nt, rules)]
-        print(f"Premier :{first}")
-
-   # si son premier c'est un nt on va chercher les premiers du nt
-    def calcul_nt_premier(self, first, nt, rules):
-
-        for i in range(len(self.non_terminaux)):
-            if self.non_terminaux[i] == rules[0]:
-                temp = str((self.non_terminaux[i]))
-                temp = str(temp)
-                print(f"{temp} valeur du non terminal, nT en cours {nt}")
-        #self.calcul_Premier(first, )
-        print(f"J'ai un problème de premier {nt}")
-        print(f"mon toit, mes règles {rules[0]}")
