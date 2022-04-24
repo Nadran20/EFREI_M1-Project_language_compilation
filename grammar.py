@@ -72,3 +72,4 @@ class Grammar:
         for _, values in temp.items():
             values.append([["eps"]])
         self.regle = dict(self.regle, **temp)
+        self.non_terminaux = [[key] for key, _ in self.regle.items()]
