@@ -90,7 +90,7 @@ class Grammar:
                     for value in temp:
                         if value not in first[key]:
                             first[key].append(value)
-        print(f"{first=}")
+        return first
     
     #Fonction recursive qui retourne une liste comprenant tous les premiers terminaux d'un non-terminal
     def calcul_premier_recursive(self, key, rule, temp):
@@ -102,5 +102,4 @@ class Grammar:
                     temp.append(item[0])
                 elif item[0] in self.non_terminaux:
                     self.calcul_premier_recursive(key, item, temp)
-        return temp
 
