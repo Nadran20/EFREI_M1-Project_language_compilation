@@ -43,7 +43,6 @@ class Grammar:
                     result += f"\n"
                 else:
                     result += f" | "
-        print(self.regle)
         return result
 
 
@@ -63,7 +62,7 @@ class Grammar:
                     except KeyError:
                         temp[f'{key}\''] = ([new_item])
             for index, item in enumerate(values): 
-                if recursive==True and not item[0] == [key] and not item[0] == ['eps']: # A VERFIER
+                if recursive==True and not item[0] == [key] :
                     values[index].append([f'{key}\''])
             recursive=False
             for item in sup:
