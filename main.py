@@ -7,3 +7,4 @@ if __name__ == '__main__':
     test1.remove_left_recursive()
     print('Suppression de la récursivité gauche :')
     print(test1)
+    test1.get_first()
