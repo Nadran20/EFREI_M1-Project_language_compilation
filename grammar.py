@@ -1,9 +1,17 @@
+import re
+
 class Grammar:
     def __init__(self, path):
         with open(path, 'r') as file:
             self.regle = {}
             lines=file.read().splitlines()
+            valid_lines = []
             for line in lines:
+                regex_expression = re.compile(".->(.+|.+[|].+)")
+                if regex_expression.match(line):
+                    valid_lines.append(line)
+
+            for line in valid_lines:
                 line = line.split("->")
                 line[0] = line[0].strip()
                 line[1] = line[1].strip()
@@ -26,6 +34,7 @@ class Grammar:
                 else:
                     result += f" {item} |"
         return result
+
 
 
     def remove_left_recursive(self):
