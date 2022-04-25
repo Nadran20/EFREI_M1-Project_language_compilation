@@ -92,6 +92,11 @@ class Grammar:
                 if rule[0] in self.terminaux:
                     if rule[0] not in first[key]:
                         first[key].append(rule[0])
+                        temp = []
+                        #self.calcul_premier_recursive(key, self.regle[key], temp)
+                        # print(f"{self.regle[key]=}")
+                        #print("oui")
+                        #print(f" symbol ouaois {key =}{rule}")
                 elif rule[0] in self.non_terminaux:
                     temp = []
                     self.calcul_premier_recursive(key, rule, temp)
