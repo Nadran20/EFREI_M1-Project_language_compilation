@@ -93,21 +93,33 @@ class Grammar:
                     if rule[0] not in first[key]:
                         first[key].append(rule[0])
                 elif rule[0] in self.non_terminaux:
-                    temp =[]
+                    temp = []
                     self.calcul_premier_recursive(key, rule, temp)
                     for value in temp:
                         if value not in first[key]:
                             first[key].append(value)
         return first
     
-    #Fonction recursive qui retourne une liste comprenant tous les premiers terminaux d'un non-terminal
+    # Fonction recursive qui retourne une liste comprenant tous les premiers terminaux d'un non-terminal
     def calcul_premier_recursive(self, key, rule, temp):
         if rule[0] in self.terminaux:
             temp.append(rule[0])
         elif rule[0] in self.non_terminaux:
+            # print(f"{item=}")
+            if self.next_eps(rule,key):
+                print(f"{self.regle[key] =}")
+                # print(f"{self.regle[key].index(rule) =}")
+                print(f"{key = }")
+            # print(f"item {item[0]}")
+
             for item in self.regle[rule[0][0]]:
+
                 if item[0] in self.terminaux:
                     temp.append(item[0])
                 elif item[0] in self.non_terminaux:
                     self.calcul_premier_recursive(key, item, temp)
 
+    def next_eps(self, rule, key):
+        #return rule.index(['eps'])
+        print(f"bouffe tes morts {rule=} et {rule == [['eps']]} t('-'t) {key=}")
+        return rule == [['eps']]

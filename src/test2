@@ -1,4 +1,4 @@
-X->Y Z
+X->YZ
 Y->A|B|eps
 Z->a|b|eps
 A->a|eps
