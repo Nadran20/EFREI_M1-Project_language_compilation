@@ -8,7 +8,7 @@ class Grammar:
             lines=file.read().splitlines()
             valid_lines = []
             for line in lines:
-                regex_expression = re.compile(".->(.+|.+[|].+)")
+                regex_expression = re.compile("[A-Z]->.+([|].+)*")
                 if regex_expression.match(line):
                     valid_lines.append(line)
 
