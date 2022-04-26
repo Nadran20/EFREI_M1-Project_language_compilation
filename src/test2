@@ -1,5 +1,6 @@
-X->YZ
+X->YZD
 Y->A|B|eps
 Z->a|b|eps
 A->a|eps
 B->u
+D->t|eps
