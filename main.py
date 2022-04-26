@@ -15,3 +15,4 @@ if __name__ == '__main__':
     print('Premier du langage obtenu :')
     print(test1.get_first())
 
+    print(test1)

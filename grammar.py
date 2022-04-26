@@ -121,7 +121,9 @@ class Grammar:
                             if value == ['eps']:
                                 isEps = True
                         if isEps:
-                            self.calcul_premier_recursive(key, [rule[1]], temp)
+                            for i in range(1, len(rule)):
+                                #rajouter la condition si eps alors on fait calcul sinon non
+                                self.calcul_premier_recursive(key, [rule[i]], temp)
                         self.calcul_premier_recursive(key, item, temp)
 
     def next_eps(self, item):
