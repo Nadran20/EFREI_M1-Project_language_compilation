@@ -23,17 +23,18 @@ class Grammar:
                         line[1][index] = list(line[1][index])
                         for index2, _ in enumerate(line[1][index]):
                             line[1][index][index2] = list(line[1][index][index2])
+                            line[1][index][index2] = line[1][index][index2][0]
                             if(line[1][index][index2] not in self.terminaux):
                                 self.terminaux.append(line[1][index][index2])
                     else:
-                        line[1][index] = [['eps']]
-                        if ['eps'] not in self.terminaux:
-                            self.terminaux.append(['eps'])
+                        line[1][index] = ['eps']
+                        if 'eps' not in self.terminaux:
+                            self.terminaux.append('eps')
                 try :
                     self.regle[line[0]] += line[1]
                 except KeyError:
                     self.regle[line[0]] = line[1]
-            self.non_terminaux = [[key] for key, _ in self.regle.items()]
+            self.non_terminaux = [key for key, _ in self.regle.items()]
             for item in self.non_terminaux:
                 if item in self.terminaux:
                     self.terminaux.remove(item)
@@ -47,7 +48,7 @@ class Grammar:
             result += f"{key} -> "
             for index, item in enumerate(values):
                 for index2, _ in enumerate(item):
-                    result += f"{item[index2][0]}"
+                    result += f"{item[index2]}"
                 if index == len(values)-1:
                     result += f"\n"
                 else:
@@ -62,52 +63,38 @@ class Grammar:
         for key, values in self.regle.items():
             sup=[]
             for item in values:
-                if item[0] == [key]:
+                if item[0] == key:
                     recursive = True
                     sup.append(item)
                     new_item = item[1:]
-                    new_item.append([f'{key}\''])
+                    new_item.append(f'{key}\'')
                     try:
                         temp[f'{key}\''].append(new_item)
                     except KeyError:
                         temp[f'{key}\''] = ([new_item])
             for index, item in enumerate(values): 
-                if recursive==True and not item[0] == [key] :
-                    values[index].append([f'{key}\''])
+                if recursive==True and not item == key :
+                    values[index].append(f'{key}\'')
             recursive = False
             for item in sup:
                 values.remove(item)
                 if len(self.regle[key]) == 0:
-                    values.append([[f"{key}\'"]])
+                    values.append([f"{key}\'"])
         for _, values in temp.items():
-            values.append([["eps"]])
+            values.append(["eps"])
         self.regle = dict(self.regle, **temp)
-        self.non_terminaux = [[key] for key, _ in self.regle.items()]
+        self.non_terminaux = [key for key, _ in self.regle.items()]
 
+
+    def get_first_of_key(self, key, value):
+        first = []
+        for item in value:
+            #print(f"{item=}")
+            continue
+        return first
 
     def get_first(self):
-        first = {key: [] for key in self.regle.keys()}
-        for key, values in self.regle.items():
-            for rule in values:
-                if rule[0] in self.terminaux:
-                    if rule[0] not in first[key]:
-                        first[key].append(rule[0])
-                elif rule[0] in self.non_terminaux:
-                    temp =[]
-                    self.calcul_premier_recursive(key, rule, temp)
-                    for value in temp:
-                        if value not in first[key]:
-                            first[key].append(value)
+        first = {}
+        for key, value in self.regle.items():
+            first[key] = self.get_first_of_key(key, value)
         return first
-    
-    #Fonction recursive qui retourne une liste comprenant tous les premiers terminaux d'un non-terminal
-    def calcul_premier_recursive(self, key, rule, temp):
-        if rule[0] in self.terminaux:
-            temp.append(rule[0])
-        elif rule[0] in self.non_terminaux:
-            for item in self.regle[rule[0][0]]:
-                if item[0] in self.terminaux:
-                    temp.append(item[0])
-                elif item[0] in self.non_terminaux:
-                    self.calcul_premier_recursive(key, item, temp)
-

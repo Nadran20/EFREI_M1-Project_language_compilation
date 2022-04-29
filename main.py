@@ -5,6 +5,6 @@ if __name__ == '__main__':
     print('Lecture du langage :')
     print(test1)
     test1.remove_left_recursive()
-    print('Suppression de la récursivité gauche :')
+    print('Suppression de la recursivite gauche :')
     print(test1)
-    test1.get_first()
+    print(test1.get_first())
