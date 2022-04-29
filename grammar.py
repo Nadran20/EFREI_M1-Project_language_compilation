@@ -1,7 +1,7 @@
 import re
 
 class Grammar:
-    def __init__(self, path):
+    def __init__(self, path) -> None:
         with open(path, 'r') as file:
             self.regle = {}
             self.terminaux = []
@@ -40,7 +40,7 @@ class Grammar:
                     self.terminaux.remove(item)
 
 
-    def __str__(self):
+    def __str__(self) -> str:
         print (f"Nous sommes les terminaux  {self.terminaux}")
         print (f"Nous sommes les non-terminaux  {self.non_terminaux}")
         result = ""
@@ -56,8 +56,7 @@ class Grammar:
         return result
 
 
-
-    def remove_left_recursive(self):
+    def remove_left_recursive(self) -> None:
         recursive = False
         temp = {}
         for key, values in self.regle.items():
@@ -86,15 +85,95 @@ class Grammar:
         self.non_terminaux = [key for key, _ in self.regle.items()]
 
 
-    def get_first_of_key(self, key, value):
+    def get_first_of_key(self, value) -> list:
         first = []
-        for item in value:
-            #print(f"{item=}")
-            continue
+        for _, item in enumerate(value):
+            for index2, item2 in enumerate(item):
+                if item2 in self.non_terminaux:
+                    f = self.get_first_of_key(self.regle[item2])
+                    if 'eps' not in f:
+                        for item3 in f:
+                            if item3 not in first:
+                                first.append(item3)
+                        break
+                    else:
+                        if index2 == len(item2)-1:
+                            for item3 in f:
+                                if item3 not in first:
+                                    first.append(item3)
+                        else:
+                            for item3 in f:
+                                if item3 not in first:
+                                    first.append(item3)
+                            first.remove('eps')
+                else:
+                    first.append(item2)
+                    break
+        print(first)
         return first
 
-    def get_first(self):
+    def get_first(self) -> dict:
         first = {}
         for key, value in self.regle.items():
-            first[key] = self.get_first_of_key(key, value)
+            first[key] = self.get_first_of_key(value)
+        self.first = first
         return first
+
+    def get_follow_of_key(self, key) -> list:
+        follow = []
+        if(key == list(self.regle.keys())[0]):
+            follow.append('$')
+
+        for item in self.regle:
+            for item2 in range(len(self.regle[item])):
+                if key in self.regle[item][item2]:
+                    idx = self.regle[item][item2].index(key)
+                    if idx == len(self.regle[item][item2])-1:
+                        if self.regle[item][item2][idx] == item:
+                            break
+                        else:
+                            f = self.get_follow_of_key(item)
+                            
+                            for x in f:
+                                if x not in follow:
+                                    follow.append(x)
+                    else:
+                        while(idx!=len(self.regle[item][item2])-1):
+                            idx+=1
+                            if not self.regle[item][item2][idx] in self.non_terminaux:
+                                if self.regle[item][item2][idx] not in follow:
+                                    follow.append(self.regle[item][item2][idx])
+                                break
+                            else:
+                                f = self.get_first_of_key(self.regle[item][item2][idx])
+                                print(f"{self.regle[item][item2]} -> {f}")
+
+                                if 'eps' not in f:
+                                    for x in f:
+                                        if x not in follow:
+                                            follow.append(x)
+                                        break
+                                elif 'eps' in f and idx != len(self.regle[item][item2])-1:
+                                    f.remove('eps')
+                                    for k in f:
+                                        if k not in follow:
+                                            follow.append(k)
+                                elif 'eps' in f and idx == len(self.regle[item][item2])-1:
+                                    f.remove('eps')
+                                    for k in f:
+                                        if k not in follow:
+                                            follow.append(k)
+                                    f = self.get_follow_of_key(item)
+                                    for x in f:
+                                        if x not in follow:
+                                            follow.append(x)
+                    print(f"{key} -> {self.regle[item][item2]}")
+        return follow
+
+
+    def get_follow(self) -> dict:
+        follow = {}
+        for key, value in self.regle.items():
+            #print(f"{key}")
+            follow[key] = self.get_follow_of_key(key)
+        return follow
