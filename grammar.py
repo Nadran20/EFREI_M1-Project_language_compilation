@@ -1,4 +1,5 @@
-import re
+from re import compile
+
 
 from pandas import value_counts
 
@@ -7,10 +8,11 @@ class Grammar:
         with open(path, 'r') as file:
             self.regle = {}
             self.terminaux = []
-            lines=file.read().splitlines()
+            lines = file.read().splitlines()
+
             valid_lines = []
             for line in lines:
-                regex_expression = re.compile(".->(.+|.+[|].+)")
+                regex_expression = compile("[A-Z]->.+([|].+)*")
                 if regex_expression.match(line):
                     valid_lines.append(line)
 
@@ -42,7 +44,6 @@ class Grammar:
                     self.terminaux.remove(item)
             self.terminaux.append('$')
 
-
     def __str__(self) -> str:
         print (f"Nous sommes les terminaux  {self.terminaux}")
         print (f"Nous sommes les non-terminaux  {self.non_terminaux}")
@@ -57,7 +58,6 @@ class Grammar:
                 else:
                     result += f" | "
         return result
-
 
     def find_letter(self) -> str :
         letter = 'A'
@@ -97,7 +97,6 @@ class Grammar:
         if 'eps' not in self.terminaux:
             self.terminaux.append('eps')
         self.non_terminaux = [key for key, _ in self.regle.items()]
-
 
     def get_first_of_key(self, value) -> list:
         first = []
@@ -201,7 +200,7 @@ class Grammar:
 # M[A,$].
 # 4. Faire de chaque entrée non définie de M une erreur.
 # Exemple : 
-# Avec la le self.regle suivante :
+# Avec la self.regle suivante :
 #  {'S' : [['a'], ['(','L',')']],
 #   'L' : [['S','A']]
 #   'A' : [[',','S','A'], ['eps']]
@@ -289,9 +288,3 @@ class Grammar:
                     result += " │ "
             result += "\n"
         return result
-
-
-
-
-
-
