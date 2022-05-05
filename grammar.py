@@ -1,7 +1,5 @@
 from re import compile
-
-
-from pandas import value_counts
+from stack import Stack
 
 class Grammar:
     def __init__(self, path) -> None:
@@ -90,7 +88,7 @@ class Grammar:
             for item in sup:
                 values.remove(item)
                 if len(self.regle[key]) == 0:
-                    values.append([f"{key}\'"])
+                    values.append(new_key)
         for _, values in temp.items():
             values.append(["eps"])
         self.regle = dict(self.regle, **temp)
@@ -226,6 +224,7 @@ class Grammar:
                             analyse_table[key] = {}
                         if item2 not in analyse_table[key]:
                             analyse_table[key][item2] = []
+                        print(f"{item=} et {item2=}")
                         analyse_table[key][item2].append(item)
                 elif item[0] == 'eps':
                     for item2 in self.follow[key]:
@@ -288,3 +287,55 @@ class Grammar:
                     result += " │ "
             result += "\n"
         return result
+
+    def word_recognition(self):
+        stack = Stack()
+        input_word = input("Entrez un mot : ")
+        input_word = list(input_word)
+        input_word.append('$')
+        stack.push('$')
+        stack.push(list(self.regle.keys())[0])
+        while stack.top() != '$' or stack.top() != input_word[0]:
+            result = ""
+            result1 = ""
+            for i in stack.items:
+                result += "   " + str(i) 
+            if len(result)>20:
+                result = "... "+ result[15:]
+            result+=  " "*(30 - len(result))
+
+            for i in input_word:
+                result1 += str(i) + "   "
+            
+            if stack.top() in self.terminaux :
+                if stack.top() == 'eps' :
+                    result+= " SUP eps " + " "*6
+                    stack.pop()
+                elif stack.top() == input_word[0] :
+                    result+= " SUP " + str(input_word[0]) + " " + " "*8
+                    stack.pop()
+                    input_word.pop(0)
+                else :
+                    return False
+            else :
+                try:
+                    temp = stack.top()
+                    stack.pop()
+                    result += " " + str(temp) + " -> "
+                    for j in self.analyse_table[temp][input_word[0]] :
+                        for i in j :
+                            result += str(i)
+                        for i in reversed(j):
+                            stack.push(i)
+                    if self.analyse_table[temp][input_word[0]][0] == ['eps']:
+                        result+= " "+ " "*(6-len(self.analyse_table[temp][input_word[0]][0])) 
+                    else:
+                        result+= " "+ " "*(8-len(self.analyse_table[temp][input_word[0]][0])) 
+
+                except KeyError :
+                    return False
+            result += " " +result1
+            print(result)
+            print( " ├"+"─"*(len(result)-4) +"┤")
+        print("   $  " + " "*24 + "FINISH" + " "*9 + " $  ")
+        return True
