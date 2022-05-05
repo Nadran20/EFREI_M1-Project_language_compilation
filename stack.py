@@ -1,4 +1,3 @@
-# Definition of a stack class
 class Stack:
     def __init__(self):
         self.items = []

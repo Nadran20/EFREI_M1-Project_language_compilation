@@ -1,4 +1,4 @@
-E->E+T | a
+E->E+T|a
 T->T*F|F
-G->F*E| a
-F->(E)| eps
+G->F*E|a
+F->(E)|eps

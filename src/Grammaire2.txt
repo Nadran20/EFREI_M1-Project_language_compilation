@@ -1,7 +1,7 @@
-E -> E+T|T
-T -> T*F|F
-G -> G/I|I
-D -> D/G|G|(
-Y -> Y*F|F
-I -> I+T|T
-F -> (E)|i
+E->E+T|T
+T->T*F|F
+G->G/I|I
+D->D/G|G|(
+Y->Y*F|F
+I->I+T|T
+F->(E)|i

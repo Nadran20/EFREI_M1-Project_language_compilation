@@ -1,0 +1,5 @@
+S->ABCD
+A->b|o|eps
+B->c|eps
+C->d
+D->e|eps

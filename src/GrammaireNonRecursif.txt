@@ -1,0 +1,6 @@
+E->YZDz
+Y->F|G|eps
+Z->a|b|eps
+D->t|eps
+F->+|-
+G->b

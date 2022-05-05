@@ -1,7 +1,15 @@
 from re import compile
 from stack import Stack
 
+
 class Grammar:
+
+    """
+    -- __init__ est le constructeur de notre classe Grammar
+    -- C'est ici que nous instancions nos différentes variables.
+    -- Nous effections aussi la lecture de fichier contenant une grammaire
+    -- [IN] : chemin de la grammaire dont nous souhaitons effectuer l'analyse descendante
+    """
     def __init__(self, path) -> None:
         with open(path, 'r') as file:
             self.regle = {}
@@ -13,6 +21,9 @@ class Grammar:
                 regex_expression = compile("[A-Z]->.+([|].+)*")
                 if regex_expression.match(line):
                     valid_lines.append(line)
+
+            if len(valid_lines) == 0:
+                raise Exception
 
             for line in valid_lines:
                 line = line.split("->")
@@ -42,9 +53,14 @@ class Grammar:
                     self.terminaux.remove(item)
             self.terminaux.append('$')
 
+    """
+    -- Cette méthode nous permet d'afficher l'ensemble des règles de notre grammaire
+    -- mais aussi d'afficher la liste de nos symboles terminaux et non-terminaux
+    -- [OUT] result : une string qui affiche les règles de notre grammaire
+    """
     def __str__(self) -> str:
-        print (f"Nous sommes les terminaux  {self.terminaux}")
-        print (f"Nous sommes les non-terminaux  {self.non_terminaux}")
+        print (f"Liste des terminaux : {self.terminaux}")
+        print (f"Liste des non-terminaux : {self.non_terminaux}")
         result = ""
         for key, values in self.regle.items():
             result += f"{key} -> "
@@ -57,13 +73,22 @@ class Grammar:
                     result += f" | "
         return result
 
+    """
+    -- Cette méthode nous permet de trouver un nouveau symbole a affecter à un nouvel état non-terminal
+    -- Nous nous assurons que la nouvelle lettre n'est pas déjà présente au sein de notre grammaire
+    -- [OUT] letter : symbole d'un nouvel état non-terminal crée
+    """
     def find_letter(self) -> str :
         letter = 'A'
         while letter in self.non_terminaux and letter != 'Z':
             letter = chr(ord(letter)+1)
         return letter
 
-
+    """
+    -- Cette méthode nous permet d'éliminer la récursivité gauche présente au sein d'une grammaire donnée
+    -- Si nous avons au moins une règle récursive à gauche nous ajoutons un nouvel état non-terminal et nous 
+    -- mettons à jour les différentes variables de notre grammaire : les règles, la liste des non-terminaux etc.
+    """
     def remove_left_recursive(self) -> None:
         recursive = False
         temp = {}
@@ -96,6 +121,11 @@ class Grammar:
             self.terminaux.append('eps')
         self.non_terminaux = [key for key, _ in self.regle.items()]
 
+    """
+    -- méthode qui nous permet de déterminer l'ensemble des premiers d'un symbole non-terminal
+    -- [IN] key : symbole non-terminal
+    -- [OUT] first : liste énumérant l'ensemble des premiers d'un non-terminal
+    """
     def get_first_of_key(self, key) -> list:
         first = []
         for _, item in enumerate(key):
@@ -122,6 +152,11 @@ class Grammar:
                     break
         return first
 
+    """
+    -- méthode qui parcourt la liste des non-terminaux pour calculer les premiers de ces derniers
+    -- Cette dernière appelle la méthode get_first_of_key
+    -- [OUT] first : retourne une dictionnaire avec les premiers de chaque non-terminaux
+    """
     def get_first(self) -> dict:
         first = {}
         for key, value in self.regle.items():
@@ -129,6 +164,11 @@ class Grammar:
         self.first = first
         return first
 
+    """
+    -- méthode qui nous permet d'obtenir sous la forme d'une liste l'ensemble des suivants d'un non-terminal 
+    -- par le biais des divers règles que nous avons pu voir en cours
+    -- [OUT] follow : terminaux appartenant à la liste des suivants du non-terminal traité
+    """
     def get_follow_of_key(self, key) -> list:
         follow = []
         if(key == list(self.regle.keys())[0]):
@@ -177,7 +217,11 @@ class Grammar:
                                             follow.append(x)
         return follow
 
-
+    """
+    -- méthode permettant de parcourir l'ensemble des non-terminaux afin de récupérer leurs suivants
+    -- cette méthode appelle la méthode get_follow_of_key
+    -- [OUT] follow : retourne le dictionnaire de suivants  
+    """
     def get_follow(self) -> dict:
         follow = {}
         for key, _ in self.regle.items():
@@ -185,29 +229,11 @@ class Grammar:
         self.follow = follow
         return follow
 
-
-#Création de la table d'analyse M à partir de first et follow sous la forme suivante :
-# M = {
-#   self.non_terminal[i] : { self.terminal[j] : [...] },
-# }
-# En suivant les regles suivante :
-# 1. Pour chaque règle A à α de la grammaire, procéder aux étapes 2 et 3.
-# 2. Pour chaque terminal a dans self.first[α], ajouter A à α à M[A][a].
-# 3. Si eps est dans self.first[α], ajouter A à α à M[A][b] pour chaque terminal b dans 
-# self.follow[A]. Si eps est dans self.first[α] et $ est dans self.follow[A], ajouter A à α à 
-# M[A,$].
-# 4. Faire de chaque entrée non définie de M une erreur.
-# Exemple : 
-# Avec la self.regle suivante :
-#  {'S' : [['a'], ['(','L',')']],
-#   'L' : [['S','A']]
-#   'A' : [[',','S','A'], ['eps']]
-# On obtient :
-# M = {
-#   'S' : {'a' : ['a'], '(': ['(','L',')']},
-#   'L' : {'a' : ['S','A'], '(': ['S','A']},
-#   'A' : {',': [',','S','A'], ')': ['eps']}
-# } 
+    """
+    -- Méthode permettant de générer la table d'analyse d'une grammaire pointé
+    -- [IN] : 
+    -- [OUT] : 
+    """
     def get_analyse_table(self) -> dict :
         analyse_table = {}
         for key, value in self.regle.items():
@@ -235,7 +261,11 @@ class Grammar:
         self.analyse_table = analyse_table
         return analyse_table
 
-
+    """
+    -- méthode boolean qui permet de déterminer si une grammaire est ambiguie ou non
+    -- [OUT] : true or false
+    """
+    
     def ambiguity_check(self) -> bool :
         for key, value in self.analyse_table.items() :
             for key2, value2 in value.items() :
@@ -243,13 +273,11 @@ class Grammar:
                     return False
         return True
 
-# Affichage sous la forme : 
-# max(len_str_terminaux)*" " |terminaux[0] | terminaux[1] | ... | terminaux[n]
-# ---------------------------------------------------------------
-# non_terminaux[0] | analyse_table[non_terminaux[0]][terminal[0]] | ... | analyse_table[non_terminaux[0]][terminal[n]]
-# non_terminaux[1] | analyse_table[non_terminaux[1]][terminal[0]] | ... | analyse_table[non_terminaux[1]][terminal[n]]
-# ...
-# non_terminaux[m] | analyse_table[non_terminaux[m]][terminal[0]] | ... | analyse_table[non_terminaux[m]][terminal[n]]
+    """
+    -- méthode permettant d'afficher la table d'analyse de notre grammaire 
+    -- [OUT] result : retourne le tableau d'analyse sous forme de chaine de caractère
+    """
+
     def get_analyse_table_to_string(self) -> str :
         result = ""
         len_str_terminaux = [len(str(terminaux)[1:-1]) for terminaux in self.terminaux]
@@ -286,6 +314,12 @@ class Grammar:
                     result += " │ "
             result += "\n"
         return result
+
+    """ 
+    -- méthode qui nous permet de tester si oui ou non un mot saisi est reconnue par la grammaire
+    -- affiche les différentes étapes de la reconnaisance du mot
+    -- [OUT] : true or false
+    """
 
     def word_recognition(self):
         stack = Stack()
