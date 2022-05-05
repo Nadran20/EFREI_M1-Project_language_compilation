@@ -96,9 +96,9 @@ class Grammar:
             self.terminaux.append('eps')
         self.non_terminaux = [key for key, _ in self.regle.items()]
 
-    def get_first_of_key(self, value) -> list:
+    def get_first_of_key(self, key) -> list:
         first = []
-        for _, item in enumerate(value):
+        for _, item in enumerate(key):
             for index2, item2 in enumerate(item):
                 if item2 in self.non_terminaux:
                     f = self.get_first_of_key(self.regle[item2])
@@ -224,7 +224,6 @@ class Grammar:
                             analyse_table[key] = {}
                         if item2 not in analyse_table[key]:
                             analyse_table[key][item2] = []
-                        print(f"{item=} et {item2=}")
                         analyse_table[key][item2].append(item)
                 elif item[0] == 'eps':
                     for item2 in self.follow[key]:
@@ -296,16 +295,16 @@ class Grammar:
         stack.push('$')
         stack.push(list(self.regle.keys())[0])
         while stack.top() != '$' or stack.top() != input_word[0]:
-            result = ""
+            result = " "
             result1 = ""
             for i in stack.items:
-                result += "   " + str(i) 
+                result += " " + str(i) 
             if len(result)>20:
                 result = "... "+ result[15:]
             result+=  " "*(30 - len(result))
 
             for i in input_word:
-                result1 += str(i) + "   "
+                result1 += str(i) + " "
             
             if stack.top() in self.terminaux :
                 if stack.top() == 'eps' :
@@ -336,6 +335,6 @@ class Grammar:
                     return False
             result += " " +result1
             print(result)
-            print( " ├"+"─"*(len(result)-4) +"┤")
+            print( " ├"+"─"*(len(result)-3) +"┤")
         print("   $  " + " "*24 + "FINISH" + " "*9 + " $  ")
         return True

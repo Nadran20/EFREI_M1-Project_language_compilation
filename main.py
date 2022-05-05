@@ -28,10 +28,12 @@ def main():
     print(dict_to_print(test1.get_follow()))
     test1.get_analyse_table()
     print("La grammaire est-elle ambigue ? ")
-    print("Non, elle ne l'est pas\n" if test1.ambiguity_check() else "Oui, c'est ambigue\n")
+    print("Non, elle ne l'est pas\n" if test1.ambiguity_check() else "Oui, elle l'est\n")
     print('Analyse Table :\n')
     if(test1.ambiguity_check()):
-        print(test1.get_analyse_table_to_string())
+         print(test1.get_analyse_table_to_string())
+    print("Reconnaissance de mots :")
+    print("Le mot est reconnu" if test1.word_recognition() else "Le mot n'est pas reconnu")
 
 if __name__ == '__main__':
     main()
